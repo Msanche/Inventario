@@ -35,22 +35,24 @@ type RootStackParamList = {
     Login: undefined
     Home:undefined
 };
-type LoginScreenProps = StackNavigationProp<RootStackParamList,'Home'>;
-type LoginScreenRoute = RouteProp<RootStackParamList, 'Home'>;
 
 type LoginProps = {
-    navigation: LoginScreenProps;
-    route: LoginScreenRoute;
+    navigation:  StackNavigationProp<RootStackParamList,'Home'>;
 };
 
 function Login({navigation}:LoginProps): React.JSX.Element{
     const [usuario,setUsuario] = useState('');
     const [contrasena,setContrasena] = useState('');
+
     const btnIngresarOnPress = function(){
     if(usuario && contrasena){
+        Alert.alert('Entraste', 'Iniciando Sesión...');
         navigation.navigate('Home');
+        return
     }
-    Alert.alert('Entraste', 'Iniciando Sesión...');
+
+    Alert.alert('Falló', 'Datos incorrectos');
+
 
     };
     return(
@@ -67,9 +69,10 @@ function Login({navigation}:LoginProps): React.JSX.Element{
         placeholder="Contraseña" 
         secureTextEntry={true}
         placeholderTextColor="#1952E6"
+        onChangeText={p=> setContrasena(p)}
         />
 
-        <Button title="Ingresar" onPress={(btnIngresarOnPress) => navigation.navigate('Login')}></Button>
+        <Button title="Ingresar" onPress={btnIngresarOnPress}></Button>
 
         </View>
         </SafeAreaView>
