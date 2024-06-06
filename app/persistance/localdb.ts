@@ -25,7 +25,7 @@ export default class LocalDB{
                 id_movimiento   INTEGER     PRIMARY KEY AUTOINCREMENT,
                 id_producto     INTEGER     NOT NULL,
                 fecha_hora      DATETIME    NOT NULL,
-                cantidad        INTEGER     NOT NULL,
+                cantidad        INTEGER     NOT NULL
                 );`,
                 [],
                 ()=>{},

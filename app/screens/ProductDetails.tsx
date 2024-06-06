@@ -1,51 +1,77 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { RootStackParamList } from "../../App";
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 
-
-export type Props = {
-  route: RouteProp<RootStackParamList, 'ProductDetails'>;
-  navigation: StackNavigationProp<RootStackParamList, 'ProductDetails'>;
+// Define the Product type
+type Product = {
+  nombre: string;
+  currentStock: number;
+  minStock: number;
+  precio: number;
 };
 
-const ProductDetails: React.FC<Props> = ({ route }: Props) => {
+type RootStackParamList = {
+  detail: { product: Product };
+  entry: undefined;
+  exits: undefined;
+};
+
+
+export type Props = {
+  route: RouteProp<RootStackParamList, 'detail'>;
+  navigation: StackNavigationProp<RootStackParamList, 'detail'>;
+};
+
+const ProductDetails: React.FC<Props> = ({ route, navigation }) => {
   const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     setProduct(route.params.product);
   }, [route]);
 
+  const btnIngresarOnPress = () => {
+    navigation.navigate('EntradasScreen',{ product });
+  };
+
+  const btnSalidas = () => {
+    navigation.navigate('SalidasScreen',{ product });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {product && (
         <View style={styles.productContainer}>
-            
           <Text style={styles.title}>{product.nombre}</Text>
 
           <View style={styles.infoContainer}>
-
             <Text style={styles.infoLabel}>Stock:</Text>
-            <Text style={[styles.higher,
-                product.currentStock < product.minStock ? styles.Lower : null,]}>{product.currentStock}</Text>
-
+            <Text
+              style={[
+                styles.infoText,
+                product.currentStock < product.minStock ? styles.lower : styles.higher,
+              ]}
+            >
+              {product.currentStock}
+            </Text>
           </View>
 
           <View style={styles.infoContainer}>
-
             <Text style={styles.infoLabel}>Stock minimo:</Text>
             <Text style={styles.infoText}>{product.minStock}</Text>
-            
           </View>
 
           <View style={styles.infoContainer}>
-
             <Text style={styles.infoLabel}>Precio:</Text>
             <Text style={styles.infoText}>{product.precio}</Text>
-
           </View>
 
+          <TouchableOpacity onPress={btnIngresarOnPress} style={styles.button}>
+            <Text style={styles.buttonText}>Entrada de producto</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={btnSalidas} style={styles.button}>
+            <Text style={styles.buttonText}>Salida de producto</Text>
+          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
@@ -81,13 +107,23 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
   },
-  higher:{
-    color:'green',
+  higher: {
+    color: 'green',
   },
-  Lower:{
-    color:'red'
-  }
-
+  lower: {
+    color: 'red',
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 export default ProductDetails;

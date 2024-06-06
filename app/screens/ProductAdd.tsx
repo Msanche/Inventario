@@ -4,16 +4,21 @@ import { useNavigation } from "@react-navigation/native";
 import LocalDB from "../persistance/localdb";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
+import WebServiceParams from "../WebServiceParams";
 
 export default function ProductAdd(): React.JSX.Element{
 
+        
         
         const navigation = useNavigation<NavigationProp<RootStackParamList>>();
         const [nombre, setNombre] = useState<string>('');
         const [precio, setPrecio] = useState<string>('0');
         const [minStock, setMinStock] = useState<string>('0');
 
+        
+
         const btnGuardarOnPress = async () => {
+                try{
                 const db = await LocalDB.connect();
                 db.transaction(tx => {
                         tx.executeSql(
@@ -22,7 +27,13 @@ export default function ProductAdd(): React.JSX.Element{
                 );
                 navigation.goBack();
                 })
-        };
+                
+        }catch (error) {
+                console.error('Error al agregar producto:', error);
+            }
+
+};      
+
 
         return (
                 <SafeAreaView>

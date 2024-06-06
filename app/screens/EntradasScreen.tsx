@@ -21,9 +21,9 @@ export function EntradasScreen(): React.JSX.Element {
   const [product, setProduct] = useState<Product>(undefined!);
   const [cantidad, setCantidad] = useState<number>(0);
 
-  const btnOnPress = function () {
-    agregarMovimiento(product, new Date(), cantidad);
-    updateStock(product, cantidad);
+  const btnOnPress = async () => {
+    await agregarMovimiento(product, new Date(), cantidad);
+    await updateStock(product, cantidad);
     navigation.goBack();
   };
 
@@ -37,36 +37,9 @@ export function EntradasScreen(): React.JSX.Element {
       <Text>Cantidad</Text>
       <TextInput
         style={style.textInput}
+        keyboardType="numeric"
         onChangeText={t => setCantidad(Number.parseInt(t, 10))}
       />
-      <Button title="Registrar entrada" onPress={btnOnPress} />
-    </SafeAreaView>
-  );
-}
-
-export function SalidasScreen(): React.JSX.Element {
-  const route = useRoute<RouteProp<RootStackParamList, 'EntradasScreen'>>();
-  const [product, setProduct] = useState<Product>(undefined!);
-  const [cantidad, setCantidad] = useState<number>(0);
-  const btnOnPress = function () {
-    if (cantidad > product.currentStock) {
-      Alert.alert(
-        'Cantidad excesiva',
-        'La cantidad de salida excede el stock actual',
-      );
-      return;
-    }
-    agregarMovimiento(product, new Date(), cantidad * -1);
-    updateStock(product, cantidad * -1);
-  };
-  useEffect(() => {
-    setProduct(route.params.product);
-  }, [route]);
-  return (
-    <SafeAreaView>
-      <Text>{product?.nombre}</Text>
-      <Text>Cantidad</Text>
-      <TextInput onChangeText={t => setCantidad(Number.parseInt(t, 10))} />
       <Button title="Registrar entrada" onPress={btnOnPress} />
     </SafeAreaView>
   );
@@ -90,7 +63,7 @@ async function agregarMovimiento(
 
 async function updateStock(product: Product, cantidad: number) {
   const db = await LocalDB.connect();
-  db.transaction(async tx => {
+  await db.transaction(async tx => {
     tx.executeSql(
       'UPDATE productos SET currentStock = (currentStock + ?) WHERE id = ?',
       [cantidad, product.id],
